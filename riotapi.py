@@ -7,7 +7,19 @@ class RateLimitException(Exception):
     pass
 
 class RiotAPIException(Exception):
-    pass
+    __init__(self, status_code, url):
+        self.status_code = status_code
+        self.url = url
+
+    __str__(self):
+        return 'Invalid request.  Status Code: ' + str(self.status_code)+ '\n' + self.url
+
+class MatchNotFoundException(Exception):
+    __init__(self, match_id):
+        self.match_id = match_id
+
+    __str__(self):
+        return "Match " + self.match_id + ' is invalid.'
 
 class RiotAPI(object):
 
@@ -22,7 +34,7 @@ class RiotAPI(object):
         elif(resp.status_code == 429):
             raise RateLimitException()
         else:
-            raise RiotAPIException('Invalid request.  Status Code: ' + str(resp.status_code)+ '\n' + resp.url)
+            raise RiotAPIException(resp.status_code, resp.url)
 
     def _check_rate_limit(self):
         since_last_request = (datetime.now() - self._last_request).total_seconds()
@@ -43,4 +55,10 @@ class RiotAPI(object):
 
 
     def match(self, match_id):
-        return self._make_request(self._baseurl + 'match/'+match_id)
+        try :
+            return self._make_request(self._baseurl + 'match/'+match_id)
+        except RiotAPIException as e:
+            if(e.status_code == 404):
+                raise MatchNotFoundException(match_id)
+            else:
+                raise e

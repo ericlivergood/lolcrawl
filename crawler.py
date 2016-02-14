@@ -1,4 +1,4 @@
-from riotapi import RiotAPI, RiotAPIException
+from riotapi import RiotAPI, RiotAPIException, MatchNotFoundException
 
 class MatchCrawler(object):
     def __init__(self, api_key, persistence_adapter):
@@ -33,6 +33,8 @@ class MatchCrawler(object):
                     self.db.crawl_match(m, str(data))
                 except RiotAPIException as e:
                     print e
+                except MatchNotFoundException as e:
+                    self.db.crawl_match(m, 'Invalid')
                            
 
             summoners = self.db.get_summoners()
