@@ -44,9 +44,11 @@ class RiotAPI(object):
 
         self._last_request = datetime.now()
 
-    def _make_request(self, url):
+    def _make_request(self, url, params = {}):
         self._check_rate_limit()
-        params = { 'api_key': self._api_key }
+        
+        params['api_key'] = self._api_key 
+
         r = requests.get(url, params=params)
         return self._process_response(r)
 
@@ -54,9 +56,12 @@ class RiotAPI(object):
         return self._make_request(self._baseurl + 'matchlist/by-summoner/'+summoner_id)
 
 
-    def match(self, match_id):
+    def match(self, match_id, include_timeline=True):
+        params = {
+            'includeTimeline' : include_timeline
+        }        
         try :
-            return self._make_request(self._baseurl + 'match/'+match_id)
+            return self._make_request(self._baseurl + 'match/'+match_id, params)
         except RiotAPIException as e:
             if(e.status_code == 404):
                 raise MatchNotFoundException(match_id)
