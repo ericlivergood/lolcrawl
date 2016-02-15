@@ -7,18 +7,18 @@ class RateLimitException(Exception):
     pass
 
 class RiotAPIException(Exception):
-    __init__(self, status_code, url):
+    def __init__(self, status_code, url):
         self.status_code = status_code
         self.url = url
 
-    __str__(self):
+    def __str__(self):
         return 'Invalid request.  Status Code: ' + str(self.status_code)+ '\n' + self.url
 
 class MatchNotFoundException(Exception):
-    __init__(self, match_id):
+    def __init__(self, match_id):
         self.match_id = match_id
 
-    __str__(self):
+    def __str__(self):
         return "Match " + self.match_id + ' is invalid.'
 
 class RiotAPI(object):

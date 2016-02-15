@@ -6,7 +6,10 @@ class MatchCrawler(object):
         self.db = persistence_adapter
 
     def _process_participant(self, p):
-        self.db.add_summoner(str(p['player']['summonerId']))
+        try:
+            self.db.add_summoner(str(p['player']['summonerId']))
+        except KeyError as e:
+            print e
 
     def _process_match(self, match):
         id = str(match['matchId'])
@@ -20,9 +23,12 @@ class MatchCrawler(object):
             for s in summoners:
                 print('crawling summoner ' + str(s))
 
-                ml = self.api.matchlist(s)
-                map(self._process_match, ml['matches'])
-                self.db.crawl_summoner(s, str(ml))
+                try:
+                    ml = self.api.matchlist(s)
+                    map(self._process_match, ml['matches'])
+                    self.db.crawl_summoner(s, str(ml))
+                except RiotAPIException as e:
+                    print e
 
             for m in matches:
                 print('crawling match ' + m) 
