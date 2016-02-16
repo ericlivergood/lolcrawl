@@ -1,4 +1,5 @@
 from riotapi import RiotAPI, RiotAPIException, MatchNotFoundException
+import pickle
 
 class MatchCrawler(object):
     def __init__(self, api_key, persistence_adapter):
@@ -26,7 +27,7 @@ class MatchCrawler(object):
                 try:
                     ml = self.api.matchlist(s)
                     map(self._process_match, ml['matches'])
-                    self.db.crawl_summoner(s, str(ml))
+                    self.db.crawl_summoner(s, pickle.dumps(ml))
                 except RiotAPIException as e:
                     print e
 
@@ -36,7 +37,7 @@ class MatchCrawler(object):
                 try:
                     data = self.api.match(m)
                     map(self._process_participant, data['participantIdentities'])
-                    self.db.crawl_match(m, str(data))
+                    self.db.crawl_match(m, pickle.dumps(data))
                 except RiotAPIException as e:
                     print e
                 except MatchNotFoundException as e:
