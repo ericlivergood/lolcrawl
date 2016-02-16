@@ -63,11 +63,21 @@ def _upsert_team(match_id, team_id, barons, dragons, first_blood, winner):
             )
             """, [match_id, team_id, barons, dragons, first_blood, winner, match_id, team_id])
 
+def _mark_match_parsed(match_id):
+    date = datetime.datetime.now()
+    sql = raw.cursor()
+    sql.execute("""
+        update match_history
+        set 
+            parsed_on = %s
+        where match_id = %s
+        """, [date, match_id])
+    raw.commit()    
+
 def parse_match(m):
     match = pickle.loads(m)
-
+    id = str(match['matchId'])
     if(match['queueType'] == 'RANKED_SOLO_5x5' or 1==1):
-        id = str(match['matchId'])
         print('adding match ' + id)
         start = datetime.datetime.fromtimestamp(match['matchCreation']/1000.0)
         _upsert_match(id, start, match['matchDuration'], match['region'], match['season'], match['matchVersion'])
@@ -83,6 +93,8 @@ def parse_match(m):
             _upsert_summoner_match(id, summoner_id, participant['teamId'], participant['championId'], participant['highestAchievedSeasonTier'])
 
         stat.commit()
+
+    _mark_match_parsed(id)
 
 
 def run():
