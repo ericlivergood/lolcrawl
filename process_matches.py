@@ -9,7 +9,7 @@ def _scalar(x):
 
 def get_matches():
     sql = raw.cursor()
-    sql.execute('select match_json from match_history where match_json is not null limit 1000;')
+    sql.execute('select match_json from match_history where match_json is not null and parsed_on is null limit 1000;')
     return map(_scalar, sql)   
 
 
