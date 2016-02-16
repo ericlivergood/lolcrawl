@@ -54,7 +54,7 @@ class PostgresAdapter(object):
                 match_json = %s
             ,   added_on = %s
             where match_id = %s
-            """, [match_json, date, id])
+            """, [psycopg2.Binary(match_json), date, id])
         self.conn.commit()     
         return 
     
@@ -68,6 +68,6 @@ class PostgresAdapter(object):
             ,    last_refreshed_on = %s
             ,    matches_parsed_on = %s
             where summoner_id = %s
-            """, [history_json, date, date, id])
+            """, [psycopg2.Binary(history_json), date, date, id])
         self.conn.commit()        
         return 
