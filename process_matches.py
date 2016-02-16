@@ -98,8 +98,12 @@ def parse_match(m):
 
 
 def run():
-    for m in get_matches():
-        parse_match(m)
+    matches = get_matches()
+    while(len(matches) > 0):
+        for m in matches:
+            parse_match(m)
+        matches = get_matches()
+
 
 run()
             
