@@ -23,8 +23,9 @@ class MatchNotFoundException(Exception):
 
 class RiotAPI(object):
 
-    def __init__(self, api_key):
-        self._baseurl = 'https://na.api.pvp.net/api/lol/na/v2.2/'
+    def __init__(self, api_key, region = 'na'):
+        self._baseurl = 'https://'+region+'.api.pvp.net/api/lol/na/v2.2/'
+        self._staticUrl = 'https://global.api.pvp.net/api/lol/static-data/' + region + '/v1.2/'
         self._last_request = datetime(1900, 1, 1)
         self._api_key = api_key
         self._session = requests.Session()
@@ -67,3 +68,34 @@ class RiotAPI(object):
                 raise MatchNotFoundException(match_id)
             else:
                 raise e
+
+    def champion(self, champData=None, dataById=False, version=None, locale='en_US', championId = None):
+        params = {
+            'champData' : champData,
+            'dataById' : dataById,
+            'version' : version,
+            'locale' : locale
+        }
+
+        url = self._staticUrl + 'champion'
+
+        if(championId is not None):
+            url = url + '/' + championId
+
+        return self._make_request(url, params)
+
+    def item(self, itemListData=None, version=None, locale='en_US', itemId = None):
+        params = {
+            'itemListData' : itemListData,
+            'version' : version,
+            'locale' : locale
+        }
+
+        url = self._staticUrl + 'item'
+
+        if(itemId is not None):
+            url = url + '/' + itemId
+
+        return self._make_request(url, params)
+
+

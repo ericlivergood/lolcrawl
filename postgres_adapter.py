@@ -71,3 +71,13 @@ class PostgresAdapter(object):
             """, [psycopg2.Binary(history_json), date, date, id])
         self.conn.commit()        
         return 
+
+    def sync_champion(self, id, name):
+        self.sql.execute("""
+            insert into champions(champion_id, name)
+            values(%s, %s)
+            on conflict(champion_id) do update set name = %s;
+        """, [id, name, name])
+
+        self.conn.commit()
+        return
